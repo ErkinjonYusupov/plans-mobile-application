@@ -1,6 +1,15 @@
 import 'package:todo_app/config/imports.dart';
 
 class WelcomeController extends GetxController {
+
+  @override
+  void onInit() {
+    GetStorage().write('welcome', true);
+    super.onInit();
+  }
+
+
+
   PageController pageController = PageController(initialPage: 0);
 
   int currentPage = 0;
@@ -12,7 +21,7 @@ class WelcomeController extends GetxController {
     {"id": 4, 'name': "Alixon", "age": 33}, //3
   ];
 
-  Map newUser = {"id": 5, "name": "Polonchi", "age": 22};
+  Map<String, dynamic> newUser = {"id": 5, "name": "Polonchi", "age": 22};
 
   List<Map> newUsers = [
     {"id": 5, "name": "Polonchi", "age": 22},
@@ -69,10 +78,12 @@ class WelcomeController extends GetxController {
 
   next() {
     if (currentPage == 2) {
-      Get.off(() => const Home());
+      Get.off(() => const MainPage());
       return;
     }
     pageController.nextPage(
         duration: const Duration(milliseconds: 300), curve: Curves.ease);
   }
+
+
 }

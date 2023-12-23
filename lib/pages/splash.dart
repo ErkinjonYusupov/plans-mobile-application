@@ -14,8 +14,15 @@ class _SplashState extends State<Splash> {
 
   @override
   void initState() {
-    Timer(const Duration(seconds: 3), () { 
-      Get.off(() => const Welcome());
+    bool welcome = GetStorage().read('welcome')??false;
+    Timer(const Duration(seconds: 3),(){
+      if (welcome){
+        Get.off(()=>const MainPage());
+      }else{
+     Get.off(() => const Welcome()); 
+
+      }
+     
     });
     super.initState();
   }
