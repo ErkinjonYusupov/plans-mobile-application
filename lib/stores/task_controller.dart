@@ -8,7 +8,7 @@ class TaskController extends GetxController {
     "Xarid",
     "Coding",
     "Mehmon",
-    "Kitob"
+    "Kitoblar"
   ];
 
   List<String> hours = [];
@@ -29,5 +29,24 @@ class TaskController extends GetxController {
     autoSet(24, hours);
     autoSet(60, minutes);
     super.onInit();
+  }
+
+  String startTime = "00:00";
+  String endTime = "00:00";
+  String selectedCategory = '';
+
+  saveTime(bool start, time) {
+    if (start) {
+      startTime = time;
+    } else {
+      endTime = time;
+    }
+    update();
+    Get.back();
+  }
+
+  setCategory(String category){
+    selectedCategory=category;
+    update();
   }
 }

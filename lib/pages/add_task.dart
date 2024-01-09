@@ -1,5 +1,4 @@
 import 'package:todo_app/config/imports.dart';
-import 'package:todo_app/stores/task_controller.dart';
 
 class AddTask extends StatefulWidget {
   const AddTask({super.key});
@@ -10,7 +9,6 @@ class AddTask extends StatefulWidget {
 
 class _AddTaskState extends State<AddTask> {
   TaskController controller = Get.put(TaskController());
-
   @override
   Widget build(BuildContext context) {
     return GetBuilder<TaskController>(
@@ -34,29 +32,27 @@ class _AddTaskState extends State<AddTask> {
                   ]),
                   //task title
                   Container(
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 25, vertical: 30),
-                    child: TextField(
-                      cursorColor: AppColors.blue5,
-                      style: TextStyle(
-                          color: AppColors.blue7,
-                          fontSize: 20,
-                          fontWeight: FontWeight.w800),
-                      decoration: InputDecoration(
-                        label: Text('Task title',
-                            style: TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.w500,
-                                color: AppColors.blue5)),
-                        enabledBorder: UnderlineInputBorder(
-                            borderSide:
-                                BorderSide(color: AppColors.blue, width: 1.0)),
-                        focusedBorder: UnderlineInputBorder(
-                            borderSide:
-                                BorderSide(color: AppColors.blue, width: 2.0)),
-                      ),
-                    ),
-                  ),
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 25, vertical: 30),
+                      child: TextField(
+                          cursorColor: AppColors.blue5,
+                          style: TextStyle(
+                              color: AppColors.blue7,
+                              fontSize: 20,
+                              fontWeight: FontWeight.w800),
+                          decoration: InputDecoration(
+                            label: Text('Task title',
+                                style: TextStyle(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.w500,
+                                    color: AppColors.blue5)),
+                            enabledBorder: UnderlineInputBorder(
+                                borderSide: BorderSide(
+                                    color: AppColors.blue, width: 1.0)),
+                            focusedBorder: UnderlineInputBorder(
+                                borderSide: BorderSide(
+                                    color: AppColors.blue, width: 2.0)),
+                          ))),
                   const SizedBox(height: 50),
                   //task description
                   Container(
@@ -73,6 +69,25 @@ class _AddTaskState extends State<AddTask> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
+                        Row(children: [
+                          TaskTimeComponent(
+                            label: "Boshlanish vaqti",
+                            time: controller.startTime,
+                            onTap: () {
+                              Get.dialog(ChooseTimeDilaog(
+                                  controller: controller, start: true));
+                            },
+                          ),
+                          const SizedBox(width: 50),
+                          TaskTimeComponent(
+                              label: "Tugash vaqti",
+                              time: controller.endTime,
+                              onTap: () {
+                                Get.dialog(ChooseTimeDilaog(
+                                    controller: controller, start: false));
+                              })
+                        ]),
+                        Divider(color: AppColors.white, thickness: 2),
                         TextField(
                           maxLines: 3,
                           cursorColor: AppColors.white,
@@ -112,21 +127,30 @@ class _AddTaskState extends State<AddTask> {
                             var item = controller.catigories[index];
                             return InkWell(
                                 onTap: () {
-                                  print('object');
+                                  controller.setCategory(item);
                                 },
                                 child: Container(
+                                    width: 100,
                                     padding: const EdgeInsets.symmetric(
                                         horizontal: 23, vertical: 10),
                                     decoration: BoxDecoration(
-                                        color: AppColors.white,
+                                        color:
+                                            item == controller.selectedCategory
+                                                ? AppColors.blue7
+                                                : AppColors.white,
                                         borderRadius:
                                             BorderRadius.circular(20)),
                                     child: Text(
                                       item,
+                                      textAlign: TextAlign.center,
+                                      overflow: TextOverflow.ellipsis,
                                       style: TextStyle(
                                           fontSize: 12,
                                           fontWeight: FontWeight.w700,
-                                          color: AppColors.blue7),
+                                          color: item ==
+                                                  controller.selectedCategory
+                                              ? AppColors.white
+                                              : AppColors.blue7),
                                     )));
                           }),
                         ),
@@ -141,6 +165,38 @@ class _AddTaskState extends State<AddTask> {
           ],
         );
       },
+    );
+  }
+}
+
+class TaskTimeComponent extends StatelessWidget {
+  TaskTimeComponent({
+    super.key,
+    required this.label,
+    required this.time,
+    required this.onTap,
+  });
+
+  String label, time;
+  Function onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return InkWell(
+      onTap: () {
+        onTap();
+      },
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(label, style: TextStyle(color: AppColors.white, fontSize: 16)),
+          Text(time,
+              style: TextStyle(
+                  color: AppColors.white,
+                  fontSize: 20,
+                  fontWeight: FontWeight.w800))
+        ],
+      ),
     );
   }
 }
