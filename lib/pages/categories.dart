@@ -10,87 +10,118 @@ class NotificationPage extends StatefulWidget {
 class _NotificationPageState extends State<NotificationPage> {
   CategoryController controller = Get.put(CategoryController());
 
+  @override
+  void initState() {
+    controller.getCategories();
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      constraints: const BoxConstraints(maxWidth: 500),
-      padding: const EdgeInsets.symmetric(horizontal: 16),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Padding(
-            padding: const EdgeInsets.symmetric(vertical: 10),
-            child: Row(
-              children: [
-                const Spacer(),
-                Text("Kategoriyalar",
-                    style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.w600,
-                        color: AppColors.blue5)),
-                const Spacer(),
-                InkWell(
-                  onTap: () {
-                    Get.dialog(AddCategoryDialog(
-                        textController: controller.title,
-                        onTap: () {
-                          controller.add();
-                        }));
-                  },
-                  child: Icon(Icons.add_circle_outline_outlined,
-                      color: AppColors.blue5, size: 30),
-                )
-              ],
-            ),
-          ),
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 5),
-            decoration: BoxDecoration(
-                border: Border.all(color: AppColors.gray6),
-                borderRadius: BorderRadius.circular(10)),
-            child: Row(
-              children: [
-                const Text("Musiqa", style: TextStyle(fontSize: 18)),
-                const Spacer(),
-                PopupMenuButton(
-                  icon: const Icon(Icons.more_vert_outlined),
-                  color: Colors.white,
-                  itemBuilder: (context) => [
-                    const PopupMenuItem(
-                      value: 1,
-                      child: Row(
-                        children: [
-                          Icon(Icons.edit, size: 20, color: Colors.green),
-                          SizedBox(width: 10),
-                          Text(
-                            "Tahrirlash",
-                            style: TextStyle(color: Colors.green),
+    return GetBuilder<CategoryController>(
+      builder: (controller) {
+        return controller.loading
+            ? const Center(child: CircularProgressIndicator())
+            : Container(
+                constraints: const BoxConstraints(maxWidth: 500),
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 10),
+                        child: Row(children: [
+                          const Spacer(),
+                          Text("Kategoriyalar",
+                              style: TextStyle(
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.w600,
+                                  color: AppColors.blue5)),
+                          const Spacer(),
+                          InkWell(
+                            onTap: () {
+                              Get.dialog(AddCategoryDialog(
+                                  textController: controller.title,
+                                  onTap: () {
+                                    controller.add();
+                                  }));
+                            },
+                            child: Icon(Icons.add_circle_outline_outlined,
+                                color: AppColors.blue5, size: 30),
                           )
-                        ],
-                      ),
-                    ),
-                    const PopupMenuItem(
-                      value: 1,
-                      child: Row(
-                        children: [
-                          Icon(Icons.delete, size: 20, color: Colors.red),
-                          SizedBox(width: 10),
-                          Text(
-                            "O'chirish",
-                            style: TextStyle(color: Colors.red),
-                          )
-                        ],
-                      ),
-                    ),
+                        ])),
+                        Column(
+                          children: List.generate(controller.categories.length, (index){
+                            var item = controller.categories[index];
+                            return CategoryItem(item:item);
+                          }),
+                        )
+                    
                   ],
-                  elevation: 2,
                 ),
-              ],
-            ),
-          )
-        ],
-      ),
+              );
+      },
+    );
+  }
+}
+
+class CategoryItem extends StatelessWidget {
+   CategoryItem({
+    super.key,
+    required this.item
+  });
+  var item;
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        Container(
+          padding: const EdgeInsets.symmetric(
+              horizontal: 16, vertical: 5),
+          decoration: BoxDecoration(
+              border: Border.all(color: AppColors.gray6),
+              borderRadius: BorderRadius.circular(10)),
+          child: Row(
+            children: [
+               Text(item['title'].toString(), style: TextStyle(fontSize: 18)),
+              const Spacer(),
+              PopupMenuButton(
+                icon: const Icon(Icons.more_vert_outlined),
+                color: Colors.white,
+                itemBuilder: (context) => [
+                  const PopupMenuItem(
+                      value: 1,
+                      child: Row(children: [
+                        Icon(Icons.edit,
+                            size: 20, color: Colors.green),
+                        SizedBox(width: 10),
+                        Text(
+                          "Tahrirlash",
+                          style: TextStyle(color: Colors.green),
+                        )
+                      ])),
+                  const PopupMenuItem(
+                    value: 1,
+                    child: Row(
+                      children: [
+                        Icon(Icons.delete,
+                            size: 20, color: Colors.red),
+                        SizedBox(width: 10),
+                        Text(
+                          "O'chirish",
+                          style: TextStyle(color: Colors.red),
+                        )
+                      ],
+                    ),
+                  ),
+                ],
+                elevation: 2,
+              ),
+            ],
+          ),
+        ),
+        const SizedBox(height: 10)
+      ],
     );
   }
 }

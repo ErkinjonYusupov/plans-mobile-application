@@ -6,7 +6,6 @@ class MyDb {
   Future open() async {
     var databasesPath = await getDatabasesPath();
     String path = join(databasesPath, 'todo.db');
-
     db = await openDatabase(path, version: 1,
         onCreate: (Database db, int version) async {
       await db.execute('''
@@ -19,7 +18,7 @@ class MyDb {
             startTime varchar(10) not null,
             endTime varchar(10) not null,
             description varchar(200) not null,
-            category varchar(100) not null,
+            category varchar(100) not null
           );
         ''');
     });
