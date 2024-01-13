@@ -25,6 +25,10 @@ export 'package:todo_app/pages/add_task.dart';
 export 'package:todo_app/stores/task_controller.dart';
 export 'package:todo_app/components/add-task/choose_time_dialog.dart';
 export 'package:todo_app/stores/category_controller.dart';
+export 'package:todo_app/config/db.dart';
+export 'package:todo_app/models/category_model.dart';
+
+
 
 
 

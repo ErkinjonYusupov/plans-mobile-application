@@ -10,6 +10,12 @@ class AddTask extends StatefulWidget {
 class _AddTaskState extends State<AddTask> {
   TaskController controller = Get.put(TaskController());
   @override
+  void initState() {
+    controller.getCategories();
+    super.initState();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return GetBuilder<TaskController>(
       builder: (controller) {
@@ -119,41 +125,50 @@ class _AddTaskState extends State<AddTask> {
                                 color: AppColors.white,
                                 fontWeight: FontWeight.w600)),
                         const SizedBox(height: 15),
-                        Wrap(
-                          spacing: 20,
-                          runSpacing: 16,
-                          children: List.generate(controller.catigories.length,
-                              (index) {
-                            var item = controller.catigories[index];
-                            return InkWell(
-                                onTap: () {
-                                  controller.setCategory(item);
-                                },
-                                child: Container(
-                                    width: 100,
-                                    padding: const EdgeInsets.symmetric(
-                                        horizontal: 23, vertical: 10),
-                                    decoration: BoxDecoration(
-                                        color:
-                                            item == controller.selectedCategory
-                                                ? AppColors.blue7
-                                                : AppColors.white,
-                                        borderRadius:
-                                            BorderRadius.circular(20)),
-                                    child: Text(
-                                      item,
-                                      textAlign: TextAlign.center,
-                                      overflow: TextOverflow.ellipsis,
-                                      style: TextStyle(
-                                          fontSize: 12,
-                                          fontWeight: FontWeight.w700,
-                                          color: item ==
-                                                  controller.selectedCategory
-                                              ? AppColors.white
-                                              : AppColors.blue7),
-                                    )));
-                          }),
-                        ),
+                        controller.loading
+                            ? const Center(
+                                child: SizedBox(
+                                    width: 20,
+                                    height: 20,
+                                    child: CircularProgressIndicator(
+                                        strokeWidth: 2)))
+                            : Wrap(
+                                spacing: 20,
+                                runSpacing: 16,
+                                children: List.generate(
+                                    controller.categories.length, (index) {
+                                  var item = controller.categories[index];
+                                  return InkWell(
+                                      onTap: () {
+                                        controller.setCategory(item.title);
+                                      },
+                                      child: Container(
+                                          width: 100,
+                                          padding: const EdgeInsets.symmetric(
+                                              horizontal: 23, vertical: 10),
+                                          decoration: BoxDecoration(
+                                              color: item.title ==
+                                                      controller
+                                                          .selectedCategory
+                                                  ? AppColors.blue7
+                                                  : AppColors.white,
+                                              borderRadius:
+                                                  BorderRadius.circular(20)),
+                                          child: Text(
+                                            item.title,
+                                            textAlign: TextAlign.center,
+                                            overflow: TextOverflow.ellipsis,
+                                            style: TextStyle(
+                                                fontSize: 12,
+                                                fontWeight: FontWeight.w700,
+                                                color: item.title ==
+                                                        controller
+                                                            .selectedCategory
+                                                    ? AppColors.white
+                                                    : AppColors.blue7),
+                                          )));
+                                }),
+                              ),
                         const SizedBox(height: 15),
                         Button(onTap: () {})
                       ],

@@ -1,15 +1,8 @@
 import 'package:todo_app/config/imports.dart';
 
 class TaskController extends GetxController {
-  List<String> catigories = [
-    "Musiqa",
-    "Kino",
-    "Sport",
-    "Xarid",
-    "Coding",
-    "Mehmon",
-    "Kitoblar"
-  ];
+  bool loading = false;
+  MyDb myDb = MyDb();
 
   List<String> hours = [];
   List<String> minutes = [];
@@ -31,8 +24,8 @@ class TaskController extends GetxController {
     super.onInit();
   }
 
-  String startTime = "00:00";
-  String endTime = "00:00";
+  String startTime = "06:00";
+  String endTime = "18:00";
   String selectedCategory = '';
 
   saveTime(bool start, time) {
@@ -45,8 +38,23 @@ class TaskController extends GetxController {
     Get.back();
   }
 
-  setCategory(String category){
-    selectedCategory=category;
+  setCategory(String category) {
+    selectedCategory = category;
     update();
+  }
+
+  List<CategoryModel> categories = [];
+
+  Future getCategories() async {
+    loading = true;
+    update();
+    await myDb.open();
+    Future.delayed(const Duration(seconds: 1), () async {
+      var res =
+          await myDb.db!.rawQuery('SELECT * FROM category ORDER BY id DESC');
+      categories = categoryFromJson(res.toList());
+      loading = false;
+      update();
+    });
   }
 }

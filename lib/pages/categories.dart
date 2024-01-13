@@ -1,3 +1,4 @@
+import 'package:todo_app/components/default/confirm_dilaog.dart';
 import 'package:todo_app/config/imports.dart';
 
 class NotificationPage extends StatefulWidget {
@@ -25,39 +26,43 @@ class _NotificationPageState extends State<NotificationPage> {
             : Container(
                 constraints: const BoxConstraints(maxWidth: 500),
                 padding: const EdgeInsets.symmetric(horizontal: 16),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Padding(
-                        padding: const EdgeInsets.symmetric(vertical: 10),
-                        child: Row(children: [
-                          const Spacer(),
-                          Text("Kategoriyalar",
-                              style: TextStyle(
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.w600,
-                                  color: AppColors.blue5)),
-                          const Spacer(),
-                          InkWell(
-                            onTap: () {
-                              Get.dialog(AddCategoryDialog(
-                                  textController: controller.title,
-                                  onTap: () {
-                                    controller.add();
-                                  }));
-                            },
-                            child: Icon(Icons.add_circle_outline_outlined,
-                                color: AppColors.blue5, size: 30),
-                          )
-                        ])),
-                        Column(
-                          children: List.generate(controller.categories.length, (index){
-                            var item = controller.categories[index];
-                            return CategoryItem(item:item);
-                          }),
-                        )
-                    
-                  ],
+                child: SingleChildScrollView(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 10),
+                          child: Row(children: [
+                            const Spacer(),
+                            Text("Kategoriyalar",
+                                style: TextStyle(
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.w600,
+                                    color: AppColors.blue5)),
+                            const Spacer(),
+                            InkWell(
+                              onTap: () {
+                                controller.title.text = '';
+                                Get.dialog(AddCategoryDialog(
+                                    textController: controller.title,
+                                    onTap: () {
+                                      controller.add();
+                                    }));
+                              },
+                              child: Icon(Icons.add_circle_outline_outlined,
+                                  color: AppColors.blue5, size: 30),
+                            )
+                          ])),
+                      Column(
+                        children: List.generate(controller.categories.length,
+                            (index) {
+                          var item = controller.categories[index];
+                          return CategoryItem(
+                              item: item, controller: controller);
+                        }),
+                      )
+                    ],
+                  ),
                 ),
               );
       },
@@ -66,52 +71,66 @@ class _NotificationPageState extends State<NotificationPage> {
 }
 
 class CategoryItem extends StatelessWidget {
-   CategoryItem({
-    super.key,
-    required this.item
-  });
+  CategoryItem({super.key, required this.item, required this.controller});
   var item;
+  CategoryController controller;
   @override
   Widget build(BuildContext context) {
     return Column(
       children: [
         Container(
-          padding: const EdgeInsets.symmetric(
-              horizontal: 16, vertical: 5),
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 5),
           decoration: BoxDecoration(
               border: Border.all(color: AppColors.gray6),
               borderRadius: BorderRadius.circular(10)),
           child: Row(
             children: [
-               Text(item['title'].toString(), style: TextStyle(fontSize: 18)),
+              Text(item['title'].toString(),
+                  style: const TextStyle(fontSize: 18)),
               const Spacer(),
               PopupMenuButton(
                 icon: const Icon(Icons.more_vert_outlined),
                 color: Colors.white,
                 itemBuilder: (context) => [
-                  const PopupMenuItem(
+                  PopupMenuItem(
                       value: 1,
-                      child: Row(children: [
-                        Icon(Icons.edit,
-                            size: 20, color: Colors.green),
-                        SizedBox(width: 10),
-                        Text(
-                          "Tahrirlash",
-                          style: TextStyle(color: Colors.green),
-                        )
-                      ])),
-                  const PopupMenuItem(
+                      child: InkWell(
+                        onTap: () {
+                          Get.back();
+                          controller.title.text = item['title'];
+                          Get.dialog(AddCategoryDialog(
+                              textController: controller.title,
+                              editing: true,
+                              onTap: () {
+                                controller.edit(item['id']);
+                              }));
+                        },
+                        child: const Row(children: [
+                          Icon(Icons.edit, size: 20, color: Colors.green),
+                          SizedBox(width: 10),
+                          Text("Tahrirlash",
+                              style: TextStyle(color: Colors.green))
+                        ]),
+                      )),
+                  PopupMenuItem(
                     value: 1,
-                    child: Row(
-                      children: [
-                        Icon(Icons.delete,
-                            size: 20, color: Colors.red),
-                        SizedBox(width: 10),
-                        Text(
-                          "O'chirish",
-                          style: TextStyle(color: Colors.red),
-                        )
-                      ],
+                    child: InkWell(
+                      onTap: () {
+                        Get.dialog(ConfirmDialog(
+                            text:
+                                "Siz rostan ${item['title']} kategoriyasini o'chirmoqchimisiz?",
+                            title: "O'chirish",
+                            onTap: () {
+                              controller.delete(item['id']);
+                            }));
+                      },
+                      child: const Row(
+                        children: [
+                          Icon(Icons.delete, size: 20, color: Colors.red),
+                          SizedBox(width: 10),
+                          Text("O'chirish", style: TextStyle(color: Colors.red))
+                        ],
+                      ),
                     ),
                   ),
                 ],
@@ -127,11 +146,15 @@ class CategoryItem extends StatelessWidget {
 }
 
 class AddCategoryDialog extends StatelessWidget {
-  const AddCategoryDialog(
-      {super.key, required this.textController, required this.onTap});
+  AddCategoryDialog(
+      {super.key,
+      required this.textController,
+      required this.onTap,
+      this.editing = false});
 
   final TextEditingController textController;
   final Function onTap;
+  bool editing;
 
   @override
   Widget build(BuildContext context) {
@@ -142,8 +165,9 @@ class AddCategoryDialog extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text("Kategoriya qo'shish",
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600)),
+          Text(editing ? "Kategoriyani tahrirlash" : "Kategoriya qo'shish",
+              style:
+                  const TextStyle(fontSize: 18, fontWeight: FontWeight.w600)),
           const SizedBox(height: 15),
           Input(
             hintText: "Kategoriya nomi",
@@ -154,7 +178,7 @@ class AddCategoryDialog extends StatelessWidget {
             onTap: () {
               onTap();
             },
-            text: "Qo'shish",
+            text: editing ? "Tahrirlash" : "Qo'shish",
           )
         ],
       ),
