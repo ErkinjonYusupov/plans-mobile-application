@@ -57,4 +57,48 @@ class TaskController extends GetxController {
       update();
     });
   }
+
+  TextEditingController title = TextEditingController();
+  TextEditingController description = TextEditingController();
+
+  bool validation() {
+    return title.text.trim().isEmpty ||
+        description.text.trim().isEmpty ||
+        selectedCategory.isEmpty;
+  }
+
+  void remowe() {
+    title.clear();
+    description.clear();
+    selectedCategory = '';
+  }
+
+  Future<void> addTask() async {
+    if (loading) return;
+    try {
+      loading = true;
+      if (validation()) {
+        Get.snackbar("Diqqat", "Ma'lumotlarni to'liq to'ldiring",
+            backgroundColor: Colors.red, colorText: Colors.white);
+        return;
+      }
+      await myDb.open();
+      await myDb.db?.rawInsert(
+          "INSERT INTO task (title, startTime, endTime, description, category) VALUES (?, ?, ?, ?, ?);",
+          [
+            title.text.trim(),
+            startTime,
+            endTime,
+            description.text.trim(),
+            selectedCategory
+          ]);
+      Get.snackbar("Sucsess", "Yangi vazifa qo'shildi",
+          duration: const Duration(seconds: 1));
+      remowe();
+    } catch (err) {
+      print(err);
+    } finally {
+      loading = false;
+    }
+  }
 }
