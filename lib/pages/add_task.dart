@@ -37,11 +37,13 @@ class _AddTaskState extends State<AddTask> {
                     SvgPicture.asset(AppIcons.search)
                   ]),
                   //task title
+
                   Container(
                       padding: const EdgeInsets.symmetric(
                           horizontal: 25, vertical: 30),
                       child: TextField(
                           cursorColor: AppColors.blue5,
+                          controller: controller.title,
                           style: TextStyle(
                               color: AppColors.blue7,
                               fontSize: 20,
@@ -62,6 +64,7 @@ class _AddTaskState extends State<AddTask> {
                   const SizedBox(height: 50),
                   //task description
                   Container(
+                    height: 500,
                     padding: const EdgeInsets.symmetric(
                         horizontal: 25, vertical: 15),
                     decoration: BoxDecoration(
@@ -96,6 +99,7 @@ class _AddTaskState extends State<AddTask> {
                         Divider(color: AppColors.white, thickness: 2),
                         TextField(
                           maxLines: 3,
+                          controller: controller.description,
                           cursorColor: AppColors.white,
                           style: TextStyle(
                               color: AppColors.white,
@@ -170,7 +174,12 @@ class _AddTaskState extends State<AddTask> {
                                 }),
                               ),
                         const SizedBox(height: 15),
-                        Button(onTap: () {})
+                        Button(
+                          onTap: () {
+                            controller.addTask();
+                          },
+                          text: "Qo'shish",
+                        )
                       ],
                     ),
                   )
